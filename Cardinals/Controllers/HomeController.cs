@@ -56,12 +56,12 @@ namespace GroceryList.Controllers
             return Json(items, JsonRequestBehavior.AllowGet);
         }
 
-        [AcceptVerbs(HttpVerbs.Get)]
-        public JsonResult GetKey()
-        {
-            var data = new { conn = ConfigurationSettings.AppSettings["MYSQL_CONNECTION_STRING"], uri = ConfigurationSettings.AppSettings["MYSQL_URI"] };
-            return Json(data, JsonRequestBehavior.AllowGet);
-        }
+        //[AcceptVerbs(HttpVerbs.Get)]
+        //public JsonResult GetKey()
+        //{
+        //    var data = new { conn = ConfigurationSettings.AppSettings["MYSQL_CONNECTION_STRING"], uri = ConfigurationSettings.AppSettings["MYSQL_URI"] };
+        //    return Json(data, JsonRequestBehavior.AllowGet);
+        //}
 
         [AcceptVerbs(HttpVerbs.Get)]
         public JsonResult GetPlayerDataOverall(int q)

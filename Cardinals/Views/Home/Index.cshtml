@@ -519,16 +519,6 @@
         // Items to run on page load
         LoadPlayerDropdown();
 
-        $.ajax({
-            type: "GET",
-            url: "Home/GetKey",
-            async: true,
-            dataType: "json",
-            success: function (data) {
-                $(".footer").html(data.conn + " | " + data.uri);
-            }
-        });
-
     });
 
 </script>
