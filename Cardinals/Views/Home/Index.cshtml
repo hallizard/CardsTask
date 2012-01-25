@@ -17,6 +17,7 @@
         <div class="content">
             
         </div>
+        <div class="footer"></div>
     </div>
 </body>
 
@@ -515,12 +516,18 @@
             NewPlayer();
         });
 
-
-        // code to create a strike zone
-        //$(".content").append(CreateStrikeZoneHtml(-1.18257, 3.24757));
-
         // Items to run on page load
         LoadPlayerDropdown();
+
+        $.ajax({
+            type: "GET",
+            url: "Home/GetKey",
+            async: true,
+            dataType: "json",
+            success: function (data) {
+                $(".footer").html(data.conn + " | " + data.uri);
+            }
+        });
 
     });
 
