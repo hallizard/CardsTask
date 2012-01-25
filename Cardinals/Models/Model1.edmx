@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="cardsModel.Store" Alias="Self" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.5" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="cardsModelStoreContainer">
+          <EntitySet Name="player_stats" EntityType="cardsModel.Store.player_stats" store:Type="Tables" Schema="cards" />
+          <EntitySet Name="players" EntityType="cardsModel.Store.players" store:Type="Tables" Schema="cards" />
+        </EntityContainer>
+        <EntityType Name="player_stats">
+          <Key>
+            <PropertyRef Name="player_id" />
+            <PropertyRef Name="bat_side" />
+            <PropertyRef Name="count_balls" />
+            <PropertyRef Name="count_strikes" />
+            <PropertyRef Name="pitch_type" />
+          </Key>
+          <Property Name="player_id" Type="int" Nullable="false" />
+          <Property Name="bat_side" Type="char" Nullable="false" MaxLength="1" />
+          <Property Name="count_balls" Type="int" Nullable="false" />
+          <Property Name="count_strikes" Type="int" Nullable="false" />
+          <Property Name="pitch_type" Type="varchar" Nullable="false" MaxLength="45" />
+          <Property Name="num_pitches" Type="int" />
+          <Property Name="num_balls" Type="int" />
+          <Property Name="num_strikes" Type="int" />
+          <Property Name="avg_speed" Type="decimal" Scale="5" />
+          <Property Name="avg_spin" Type="decimal" Scale="5" />
+          <Property Name="avg_horz" Type="decimal" Scale="5" />
+          <Property Name="avg_vert" Type="decimal" Scale="5" />
+        </EntityType>
+        <EntityType Name="players">
+          <Key>
+            <PropertyRef Name="player_id" />
+          </Key>
+          <Property Name="player_id" Type="int" Nullable="false" />
+          <Property Name="player_name" Type="varchar" MaxLength="100" />
+          <Property Name="uniform_number" Type="int" />
+          <Property Name="bats" Type="char" MaxLength="1" />
+          <Property Name="throws" Type="char" MaxLength="1" />
+          <Property Name="height" Type="int" />
+          <Property Name="weight" Type="int" />
+          <Property Name="birth_date" Type="varchar" MaxLength="45" />
+        </EntityType>
+        <!--Errors Found During Generation:
+      warning 6013: The table/view 'def.cards.pitches' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+      
+      <EntityType Name="pitches">
+        <Property Name="game_id" Type="int" />
+        <Property Name="batter_id" Type="int" />
+        <Property Name="pitcher_id" Type="int" />
+        <Property Name="balls" Type="int" />
+        <Property Name="strikes" Type="int" />
+        <Property Name="event" Type="varchar" MaxLength="45" />
+        <Property Name="is_hit" Type="char" MaxLength="1" />
+        <Property Name="is_out" Type="char" MaxLength="1" />
+        <Property Name="pitch_type" Type="varchar" MaxLength="45" />
+        <Property Name="pitch_horizontal_location_in_feet" Type="decimal" Scale="5" />
+        <Property Name="pitch_vertical_location_in_feet" Type="decimal" Scale="5" />
+        <Property Name="pitch_located_in_strike_zone" Type="char" MaxLength="1" />
+        <Property Name="pitch_velocity_mph" Type="decimal" Scale="5" />
+        <Property Name="pitch_spin_rate" Type="decimal" Scale="5" />
+      </EntityType>-->
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="cardsModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="cardsEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="player_stats" EntityType="cardsModel.player_stats" />
+          <EntitySet Name="players" EntityType="cardsModel.player" />
+        </EntityContainer>
+        <EntityType Name="player_stats">
+          <Key>
+            <PropertyRef Name="player_id" />
+            <PropertyRef Name="bat_side" />
+            <PropertyRef Name="count_balls" />
+            <PropertyRef Name="count_strikes" />
+            <PropertyRef Name="pitch_type" />
+          </Key>
+          <Property Name="player_id" Type="Int32" Nullable="false" />
+          <Property Name="bat_side" Type="String" Nullable="false" />
+          <Property Name="count_balls" Type="Int32" Nullable="false" />
+          <Property Name="count_strikes" Type="Int32" Nullable="false" />
+          <Property Name="pitch_type" Type="String" Nullable="false" />
+          <Property Name="num_pitches" Type="Int32" />
+          <Property Name="num_balls" Type="Int32" />
+          <Property Name="num_strikes" Type="Int32" />
+          <Property Name="avg_speed" Type="Decimal" />
+          <Property Name="avg_spin" Type="Decimal" />
+          <Property Name="avg_horz" Type="Decimal" />
+          <Property Name="avg_vert" Type="Decimal" />
+        </EntityType>
+        <EntityType Name="player">
+          <Key>
+            <PropertyRef Name="player_id" />
+          </Key>
+          <Property Name="player_id" Type="Int32" Nullable="false" />
+          <Property Name="player_name" Type="String" />
+          <Property Name="uniform_number" Type="Int32" />
+          <Property Name="bats" Type="String" />
+          <Property Name="throws" Type="String" />
+          <Property Name="height" Type="Int32" />
+          <Property Name="weight" Type="Int32" />
+          <Property Name="birth_date" Type="String" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="cardsModelStoreContainer" CdmEntityContainer="cardsEntities">
+          <EntitySetMapping Name="player_stats"><EntityTypeMapping TypeName="cardsModel.player_stats"><MappingFragment StoreEntitySet="player_stats">
+            <ScalarProperty Name="player_id" ColumnName="player_id" />
+            <ScalarProperty Name="bat_side" ColumnName="bat_side" />
+            <ScalarProperty Name="count_balls" ColumnName="count_balls" />
+            <ScalarProperty Name="count_strikes" ColumnName="count_strikes" />
+            <ScalarProperty Name="pitch_type" ColumnName="pitch_type" />
+            <ScalarProperty Name="num_pitches" ColumnName="num_pitches" />
+            <ScalarProperty Name="num_balls" ColumnName="num_balls" />
+            <ScalarProperty Name="num_strikes" ColumnName="num_strikes" />
+            <ScalarProperty Name="avg_speed" ColumnName="avg_speed" />
+            <ScalarProperty Name="avg_spin" ColumnName="avg_spin" />
+            <ScalarProperty Name="avg_horz" ColumnName="avg_horz" />
+            <ScalarProperty Name="avg_vert" ColumnName="avg_vert" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+          <EntitySetMapping Name="players"><EntityTypeMapping TypeName="cardsModel.player"><MappingFragment StoreEntitySet="players">
+            <ScalarProperty Name="player_id" ColumnName="player_id" />
+            <ScalarProperty Name="player_name" ColumnName="player_name" />
+            <ScalarProperty Name="uniform_number" ColumnName="uniform_number" />
+            <ScalarProperty Name="bats" ColumnName="bats" />
+            <ScalarProperty Name="throws" ColumnName="throws" />
+            <ScalarProperty Name="height" ColumnName="height" />
+            <ScalarProperty Name="weight" ColumnName="weight" />
+            <ScalarProperty Name="birth_date" ColumnName="birth_date" />
+          </MappingFragment></EntityTypeMapping></EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams>
+      <Diagram Name="Model1">
+        <EntityTypeShape EntityType="cardsModel.player_stats" Width="1.5" PointX="0.75" PointY="0.75" Height="3.3263964843749996" IsExpanded="true" />
+        <EntityTypeShape EntityType="cardsModel.player" Width="1.5" PointX="2.75" PointY="0.75" Height="2.5571907552083326" IsExpanded="true" />
+      </Diagram>
+    </Diagrams>
+  </Designer>
+</edmx:Edmx>

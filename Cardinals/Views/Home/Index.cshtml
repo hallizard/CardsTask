@@ -1,0 +1,527 @@
+﻿@{
+    ViewBag.Title = "St. Louis Cardinals Task";
+}
+<body>
+    <div class="main">
+        <div class="spinner"><img src="../../Content/images/loading.gif" /></div>
+        <div class="logo"><img width="160px" src="../../Content/images/cardinals_logo.jpg" /></div>
+        <div class="title"><img src="../../Content/images/title.png" /></div>
+    
+        <div class="table-header">
+            <span class="header-text">Select Pitcher:&nbsp;</span><select id="players"></select>
+            <br />
+            <div class="box overall selected">Overall</div>
+            <div class="box split">Vs Left/Right</div>
+            <div class="box count">By Count</div>
+        </div>
+        <div class="content">
+            
+        </div>
+    </div>
+</body>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        ShowSpinner = function () {
+            $(".spinner").attr("style", "display:block");
+        };
+
+        HideSpinner = function () {
+            $(".spinner").attr("style", "display:none");
+        };
+
+        NewPlayer = function () {
+            ClearSelections();
+            $(".overall").addClass("selected");
+            LoadPlayerDataOverall();
+        };
+
+        $(".overall").click(function () {
+            NewPlayer();
+        });
+
+        $(".split").click(function () {
+            ClearSelections();
+            $(".split").addClass("selected");
+            LoadPlayerDataSplit();
+        });
+
+        $(".count").click(function () {
+            ClearSelections();
+            $(".count").addClass("selected");
+            LoadPlayerDataByCount();
+        });
+
+        ClearSelections = function () {
+            $(".content").empty();
+            $(".box").removeClass("selected");
+        };
+
+        CreateStrikeZoneHtml = function (horz, vert, title) {
+            var html = '<div class="zone">';
+            var classname = '';
+            var vertical = 20 - (vert * 4);
+            var horizontal = (horz + 3) * 4;
+
+            if (title) {
+                html += '<div class="zone-title">' + title + '</div>';
+            }
+
+            for (var i = 0; i < 20; i++) {
+                for (var j = 0; j < 24; j++) {
+                    classname = '';
+
+                    if ((vertical >= i && vertical < i + 1) && (horizontal >= j && horizontal < j + 1)) {
+                        classname += ' baseball';
+                    }
+
+                    if (j === 0) {
+                        classname += ' left-edge';
+                    }
+                    if (j === 23) {
+                        classname += ' right-edge';
+                    }
+                    if (i === 0) {
+                        classname += ' top-edge';
+                    }
+                    if (i === 19) {
+                        classname += ' bottom-edge';
+                    }
+                    if (i === 6 && (j >= 8 && j <= 15)) {
+                        classname += ' strike-top-edge';
+                    }
+                    if (i === 13 && (j >= 8 && j <= 15)) {
+                        classname += ' strike-bottom-edge';
+                    }
+                    if ((i >= 6 && i <= 13) && j === 8) {
+                        classname += ' strike-left-edge';
+                    }
+                    if ((i >= 6 && i <= 13) && j === 15) {
+                        classname += ' strike-right-edge';
+                    }
+
+                    html += '<div class="zone-cell' + classname + '"></div>';
+                }
+            }
+            html += "</div>";
+            return html;
+        };
+
+        LoadPlayerDropdown = function () {
+
+            $.ajax({
+                type: "GET",
+                url: "Home/GetPlayers",
+                async: false,
+                dataType: "json",
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        $("<option>").attr("value", data[i].player_id).text(data[i].name).appendTo("#players");
+                    }
+                    ClearSelections();
+                    $(".overall").addClass("selected");
+                    LoadPlayerDataOverall();
+                }
+            });
+        };
+
+        LoadPlayerDataOverall = function () {
+            ShowSpinner();
+
+            $.ajax({
+                type: "GET",
+                url: "Home/GetPlayerDataOverall",
+                data: "q=" + $("#players").val(),
+                async: true,
+                dataType: "json",
+                success: function (data) {
+
+                    var newhtml = "<table class='table-data'><tr><th class='wider'></th>",
+                        total_pitches;
+
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].pitch_type === 'All') {
+                            total_pitches = data[i].num_pitches;
+                            newhtml += "<th>All Pitches</th>";
+                        } else {
+                            newhtml += "<th>" + data[i].pitch_type + "</th>";
+                        }
+                    }
+                    newhtml += "</tr><tr class='odd'><td class='header'>Percentage of Pitches</td>";
+
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].pitch_type === 'All') {
+                            newhtml += "<td>-</td>";
+                        } else {
+                            newhtml += "<td>" + (data[i].num_pitches / total_pitches * 100).toFixed(1) + "%</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr><td class='header'>Percentage for Strikes</td>";
+
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].num_pitches > 0) {
+                            newhtml += "<td>" + (data[i].num_strikes / data[i].num_pitches * 100).toFixed(1) + "%</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr class='odd'><td class='header'>Average Speed</td>";
+
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].num_pitches > 0) {
+                            newhtml += "<td>" + data[i].avg_speed.toFixed(1) + " mph</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr><td class='header'>Average Location</td>";
+
+                    for (var i = 0; i < data.length; i++) {
+                        if (data[i].num_pitches > 0) {
+                            newhtml += "<td>" + CreateStrikeZoneHtml(data[i].avg_horz, data[i].avg_vert) + "</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+
+                    newhtml += "</tr></table>";
+
+                    HideSpinner();
+
+                    $(".content").empty().html(newhtml);
+                }
+            });
+        };
+
+        LoadPlayerDataSplit = function () {
+            ShowSpinner();
+
+            $.ajax({
+                type: "GET",
+                url: "Home/GetPlayerDataSplit",
+                data: "q=" + $("#players").val(),
+                async: true,
+                dataType: "json",
+                success: function (data) {
+
+                    var newhtml = "<table class='table-data'><tr><th colspan=6>Vs Left Handed Batters</th></tr><tr><th class='wider'></th>",
+                        total_pitches;
+
+                    for (var i = 0; i < data.left.length; i++) {
+                        if (data.left[i].pitch_type === 'All') {
+                            total_pitches = data.left[i].num_pitches;
+                            newhtml += "<th>All Pitches</th>";
+                        } else {
+                            newhtml += "<th>" + data.left[i].pitch_type + "</th>";
+                        }
+                    }
+                    newhtml += "</tr><tr class='odd'><td class='header'>Percentage of Pitches</td>";
+
+                    for (var i = 0; i < data.left.length; i++) {
+                        if (data.left[i].pitch_type === 'All') {
+                            newhtml += "<td>-</td>";
+                        } else {
+                            newhtml += "<td>" + (data.left[i].num_pitches / total_pitches * 100).toFixed(1) + "%</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr><td class='header'>Percentage for Strikes</td>";
+
+                    for (var i = 0; i < data.left.length; i++) {
+                        if (data.left[i].num_pitches > 0) {
+                            newhtml += "<td>" + (data.left[i].num_strikes / data.left[i].num_pitches * 100).toFixed(1) + "%</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr class='odd'><td class='header'>Average Speed</td>";
+
+                    for (var i = 0; i < data.left.length; i++) {
+                        if (data.left[i].num_pitches > 0) {
+                            newhtml += "<td>" + data.left[i].avg_speed.toFixed(1) + " mph</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr><td class='header'>Average Location</td>";
+
+                    for (var i = 0; i < data.left.length; i++) {
+                        if (data.left[i].num_pitches > 0) {
+                            newhtml += "<td>" + CreateStrikeZoneHtml(data.left[i].avg_horz, data.left[i].avg_vert) + "</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+
+                    newhtml += "</tr></table>";
+
+                    newhtml += "<br><br><table class='table-data'><tr><th colspan=6>Vs Right Handed Batters</th></tr><tr><th class='wider'></th>";
+
+                    for (var i = 0; i < data.right.length; i++) {
+                        if (data.right[i].pitch_type === 'All') {
+                            total_pitches = data.right[i].num_pitches;
+                            newhtml += "<th>All Pitches</th>";
+                        } else {
+                            newhtml += "<th>" + data.right[i].pitch_type + "</th>";
+                        }
+                    }
+                    newhtml += "</tr><tr class='odd'><td class='header'>Percentage of Pitches</td>";
+
+                    for (var i = 0; i < data.right.length; i++) {
+                        if (data.right[i].pitch_type === 'All') {
+                            newhtml += "<td>-</td>";
+                        } else {
+                            newhtml += "<td>" + (data.right[i].num_pitches / total_pitches * 100).toFixed(1) + "%</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr><td class='header'>Percentage for Strikes</td>";
+
+                    for (var i = 0; i < data.right.length; i++) {
+                        if (data.right[i].num_pitches > 0) {
+                            newhtml += "<td>" + (data.right[i].num_strikes / data.right[i].num_pitches * 100).toFixed(1) + "%</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr class='odd'><td class='header'>Average Speed</td>";
+
+                    for (var i = 0; i < data.right.length; i++) {
+                        if (data.right[i].num_pitches > 0) {
+                            newhtml += "<td>" + data.right[i].avg_speed.toFixed(1) + " mph</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+                    newhtml += "</tr><tr><td class='header'>Average Location</td>";
+
+                    for (var i = 0; i < data.right.length; i++) {
+                        if (data.right[i].num_pitches > 0) {
+                            newhtml += "<td>" + CreateStrikeZoneHtml(data.right[i].avg_horz, data.right[i].avg_vert) + "</td>";
+                        } else {
+                            newhtml += "<td>-</td>";
+                        }
+                    }
+
+                    newhtml += "</tr></table>";
+
+                    HideSpinner();
+
+                    $(".content").empty().html(newhtml);
+                }
+            });
+        };
+
+        LoadPlayerDataByCount = function () {
+            ShowSpinner();
+
+            $.ajax({
+                type: "GET",
+                url: "Home/GetPlayerDataByCount",
+                data: "q=" + $("#players").val(),
+                async: false,
+                dataType: "json",
+                success: function (data) {
+
+                    var newhtml = '-',
+                        total_pitches,
+                        counts = ['0-0', '1-0', '1-1', '2-0', '2-1', '2-2', '3-0', '3-1', '3-2'];
+
+                    for (var k = 0; k < counts.length; k++) {
+
+                        if (newhtml === '-') {
+                            newhtml = "<table class='table-data'><tr><th colspan=6>" + counts[k] + "</th></tr><tr><th class='wider'></th>";
+                        } else {
+                            newhtml += "<br><br><table class='table-data'><tr><th colspan=6>" + counts[k] + "</th></tr><tr><th class='wider'></th>";
+                        }
+
+                        for (var i = 0; i < data.length; i++) {
+                            if (counts[k] === data[i].count_balls + '-' + data[i].count_strikes) {
+                                if (data[i].pitch_type === 'All') {
+                                    total_pitches = data[i].num_pitches;
+                                    newhtml += "<th>All Pitches</th>";
+                                } else {
+                                    newhtml += "<th>" + data[i].pitch_type + "</th>";
+                                }
+                            }
+                        }
+                        newhtml += "</tr><tr class='odd'><td class='header'>Percentage of Pitches</td>";
+
+                        for (var i = 0; i < data.length; i++) {
+                            if (counts[k] === data[i].count_balls + '-' + data[i].count_strikes) {
+                                if (data[i].pitch_type === 'All') {
+                                    newhtml += "<td>-</td>";
+                                } else {
+                                    newhtml += "<td>" + (data[i].num_pitches / total_pitches * 100).toFixed(1) + "%</td>";
+                                }
+                            }
+                        }
+                        newhtml += "</tr><tr><td class='header'>Percentage for Strikes</td>";
+
+                        for (var i = 0; i < data.length; i++) {
+                            if (counts[k] === data[i].count_balls + '-' + data[i].count_strikes) {
+                                if (data[i].num_pitches > 0) {
+                                    newhtml += "<td>" + (data[i].num_strikes / data[i].num_pitches * 100).toFixed(1) + "%</td>";
+                                } else {
+                                    newhtml += "<td>-</td>";
+                                }
+                            }
+                        }
+                        newhtml += "</tr><tr class='odd'><td class='header'>Average Speed</td>";
+
+                        for (var i = 0; i < data.length; i++) {
+                            if (counts[k] === data[i].count_balls + '-' + data[i].count_strikes) {
+                                if (data[i].num_pitches > 0) {
+                                    newhtml += "<td>" + data[i].avg_speed.toFixed(1) + " mph</td>";
+                                } else {
+                                    newhtml += "<td>-</td>";
+                                }
+                            }
+                        }
+                        newhtml += "</tr><tr><td class='header'>Average Location</td>";
+
+                        for (var i = 0; i < data.length; i++) {
+                            if (counts[k] === data[i].count_balls + '-' + data[i].count_strikes) {
+                                if (data[i].num_pitches > 0) {
+                                    newhtml += "<td>" + CreateStrikeZoneHtml(data[i].avg_horz, data[i].avg_vert) + "</td>";
+                                } else {
+                                    newhtml += "<td>-</td>";
+                                }
+                            }
+                        }
+
+                        newhtml += "</tr></table>";
+                    }
+
+
+                    HideSpinner();
+
+                    $(".content").empty().html(newhtml);
+
+
+
+
+
+
+                    var newhtml = "<table class='table-data'><tr><th>Bat Side</th><th>Count</th><th>FB</th><th>CH</th><th>SL</th><th>CU</th></tr>",
+                        curPK,
+                        lastPK = '-';
+
+                    for (i = 0; i < data.length; i++) {
+
+                        curPK = data[i].bat_side + "|" + data[i].count_balls + "|" + data[i].count_strikes;
+
+                        if (curPK !== lastPK && lastPK !== '-') {
+                            if (odd) {
+                                newhtml += "<tr class='odd'>";
+                                odd = false;
+                            } else {
+                                newhtml += "<tr>";
+                                odd = true;
+                            }
+
+                            if (all_tot == 0) {
+                                newhtml += "<td>" + batSide + "</td><td>" + count + "</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>";
+                            } else {
+                                newhtml += "<td>" + batSide + "</td><td>" + count + "</td><td>" + (fb_tot / all_tot * 100).toFixed(0) + "%</td><td>" + (ch_tot / all_tot * 100).toFixed(0) + "%</td><td>" + (sl_tot / all_tot * 100).toFixed(0) + "%</td><td>" + (cu_tot / all_tot * 100).toFixed(0) + "%</td></tr>";
+                            }
+                        }
+                        lastPK = curPK;
+
+                        if (data[i].count_balls === 9) {
+                            count = 'All';
+                        } else {
+                            count = data[i].count_balls + '-' + data[i].count_strikes;
+                        }
+
+                        if (data[i].bat_side === 'B') {
+                            batSide = 'All';
+                        } else if (data[i].bat_side === 'L') {
+                            batSide = 'Left';
+                        } else if (data[i].bat_side === 'R') {
+                            batSide = 'Right';
+                        }
+
+                        if (data[i].pitch_type === 'Fastball') {
+                            fb_tot = data[i].num_pitches;
+                            fb_str = data[i].num_strikes;
+                            fb_bal = data[i].num_balls;
+                            fb_speed = data[i].avg_speed;
+                            fb_hor = data[i].avg_horz;
+                            fb_ver = data[i].avg_vert;
+
+                            zonehtml += "<br>" + CreateStrikeZoneHtml(fb_hor, fb_ver, 'FB vs ' + batSide + " (" + count + ")");
+                        } else if (data[i].pitch_type === 'Curveball') {
+                            cu_tot = data[i].num_pitches;
+                            cu_str = data[i].num_strikes;
+                            cu_bal = data[i].num_balls;
+                            cu_speed = data[i].avg_speed;
+                            cu_hor = data[i].avg_horz;
+                            cu_ver = data[i].avg_vert;
+
+                            zonehtml += "<br>" + CreateStrikeZoneHtml(fb_hor, fb_ver, 'CU vs ' + batSide + " (" + count + ")");
+                        } else if (data[i].pitch_type === 'Changeup') {
+                            ch_tot = data[i].num_pitches;
+                            ch_str = data[i].num_strikes;
+                            ch_bal = data[i].num_balls;
+                            ch_speed = data[i].avg_speed;
+                            ch_hor = data[i].avg_horz;
+                            ch_ver = data[i].avg_vert;
+
+                            zonehtml += "<br>" + CreateStrikeZoneHtml(fb_hor, fb_ver, 'CH vs ' + batSide + " (" + count + ")");
+                        } else if (data[i].pitch_type === 'Slider') {
+                            sl_tot = data[i].num_pitches;
+                            sl_str = data[i].num_strikes;
+                            sl_bal = data[i].num_balls;
+                            sl_speed = data[i].avg_speed;
+                            sl_hor = data[i].avg_horz;
+                            sl_ver = data[i].avg_vert;
+
+                            zonehtml += "<br>" + CreateStrikeZoneHtml(fb_hor, fb_ver, 'SL vs ' + batSide + " (" + count + ")");
+                        } else if (data[i].pitch_type === 'All') {
+                            all_tot = data[i].num_pitches;
+                            all_str = data[i].num_strikes;
+                            all_bal = data[i].num_balls;
+                            all_speed = data[i].avg_speed;
+                            all_hor = data[i].avg_horz;
+                            all_ver = data[i].avg_vert;
+                        }
+
+                    }
+
+                    // Show the last record
+                    if (lastPK !== '-') {
+                        if (odd) {
+                            newhtml += "<tr class='odd'>";
+                            odd = false;
+                        } else {
+                            newhtml += "<tr>";
+                            odd = true;
+                        }
+                        newhtml += "<td>" + batSide + "</td><td>" + count + "</td><td>" + (fb_tot / all_tot * 100).toFixed(0) + "%</td><td>" + (ch_tot / all_tot * 100).toFixed(0) + "%</td><td>" + (sl_tot / all_tot * 100).toFixed(0) + "%</td><td>" + (cu_tot / all_tot * 100).toFixed(0) + "%</td></tr>";
+                    }
+
+                    newhtml += "</table>";
+
+                    HideSpinner();
+
+                    $(".content").empty().html(newhtml);
+                }
+            });
+        };
+
+        $("#players").change(function () {
+            NewPlayer();
+        });
+
+
+        // code to create a strike zone
+        //$(".content").append(CreateStrikeZoneHtml(-1.18257, 3.24757));
+
+        // Items to run on page load
+        LoadPlayerDropdown();
+
+    });
+
+</script>

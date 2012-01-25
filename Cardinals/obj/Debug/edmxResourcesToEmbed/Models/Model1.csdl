@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="cardsModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+  <EntityContainer Name="cardsEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="player_stats" EntityType="cardsModel.player_stats" />
+    <EntitySet Name="players" EntityType="cardsModel.player" />
+  </EntityContainer>
+  <EntityType Name="player_stats">
+    <Key>
+      <PropertyRef Name="player_id" />
+      <PropertyRef Name="bat_side" />
+      <PropertyRef Name="count_balls" />
+      <PropertyRef Name="count_strikes" />
+      <PropertyRef Name="pitch_type" />
+    </Key>
+    <Property Name="player_id" Type="Int32" Nullable="false" />
+    <Property Name="bat_side" Type="String" Nullable="false" />
+    <Property Name="count_balls" Type="Int32" Nullable="false" />
+    <Property Name="count_strikes" Type="Int32" Nullable="false" />
+    <Property Name="pitch_type" Type="String" Nullable="false" />
+    <Property Name="num_pitches" Type="Int32" />
+    <Property Name="num_balls" Type="Int32" />
+    <Property Name="num_strikes" Type="Int32" />
+    <Property Name="avg_speed" Type="Decimal" />
+    <Property Name="avg_spin" Type="Decimal" />
+    <Property Name="avg_horz" Type="Decimal" />
+    <Property Name="avg_vert" Type="Decimal" />
+  </EntityType>
+  <EntityType Name="player">
+    <Key>
+      <PropertyRef Name="player_id" />
+    </Key>
+    <Property Name="player_id" Type="Int32" Nullable="false" />
+    <Property Name="player_name" Type="String" />
+    <Property Name="uniform_number" Type="Int32" />
+    <Property Name="bats" Type="String" />
+    <Property Name="throws" Type="String" />
+    <Property Name="height" Type="Int32" />
+    <Property Name="weight" Type="Int32" />
+    <Property Name="birth_date" Type="String" />
+  </EntityType>
+</Schema>

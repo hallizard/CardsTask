@@ -1,0 +1,12 @@
+C:\Code\GroceryList\GroceryList\GroceryList\bin\GroceryList.dll
+C:\Code\GroceryList\GroceryList\GroceryList\bin\GroceryList.pdb
+C:\Code\GroceryList\GroceryList\GroceryList\bin\EntityFramework.dll
+C:\Code\GroceryList\GroceryList\GroceryList\bin\System.Data.Entity.dll
+C:\Code\GroceryList\GroceryList\GroceryList\bin\System.Web.Abstractions.dll
+C:\Code\GroceryList\GroceryList\GroceryList\bin\System.Web.Mvc.dll
+C:\Code\GroceryList\GroceryList\GroceryList\bin\System.Web.Routing.dll
+C:\Code\GroceryList\GroceryList\GroceryList\bin\EntityFramework.xml
+C:\Code\GroceryList\GroceryList\GroceryList\bin\System.Web.Mvc.xml
+C:\Code\GroceryList\GroceryList\GroceryList\obj\Debug\ResolveAssemblyReference.cache
+C:\Code\GroceryList\GroceryList\GroceryList\obj\Debug\GroceryList.dll
+C:\Code\GroceryList\GroceryList\GroceryList\obj\Debug\GroceryList.pdb

@@ -1,0 +1,40 @@
+﻿
+.spinner { display: none; position: absolute; left: 49%; top: 420px; }
+
+body { background-color: #C41E3A; font-family: sans-serif; font-size: 12px; }
+.main { margin: 0 auto; width: 1000px; min-height: 700px; margin-top: 20px; border: 5px solid Navy; background-color: White; padding: 15px; margin-bottom: 20px; }
+.logo { display: inline-block; width: 200px; height: 170px; margin-left: 15px; }
+.title { display: inline-block; width: 500px; height: 170px; margin-left: 40px; }
+
+.table-header { clear: both; width: 995px; margin: 0 auto; margin-bottom: 8px; height: 65px; text-align: center; padding-top: 15px; padding-bottom: 15px; margin-top: 10px; border-top: 2px solid black; border-bottom: 2px solid black; }
+.content { clear: both; width: 955px; padding: 10px; text-align: center; clear: both; overflow: auto; }
+
+#players { width: 200px; height: 25px; font-size: 18px; margin-bottom: 10px;}
+.header-text { font-size: 18px; }
+
+.box { width: 170px; text-align: center; display: inline-block; font-weight: bold; color: #C41E3A; font-size: 14px; cursor: pointer; padding: 6px; border: 2px solid Navy; }
+.box:hover { background-color: #ECD872; }
+.box.selected { background-color: #ECD872; color: Black; }
+
+.table-data { margin: 0 auto; }
+.table-data th { background-color: #C41E3A; text-align: center; color: White; font-weight: bold; font-size: 17px; border: 1px solid black; height: 25px; vertical-align: middle; }
+.table-data th.wider { width: 300px; }
+.table-data th.thin { width: 50px; }
+.table-data tr.odd { background-color: #FBF9FF; }
+.table-data tr:hover { background-color: #E9F1EA; }
+.table-data td { width: 150px; height: 15px; border: 1px solid black; vertical-align: middle; padding: 5px; }
+.table-data td.header { font-weight: bold; }
+.table-data td.zone { text-align: center; }
+
+.zone { width: 72px; margin: 0 auto; }
+.zone-title { width: 100%; font-weight: bold; }
+.zone-cell { width: 3px; height: 4px; margin: 0px; padding: 0px; display: inline-block; float: left; }
+.left-edge { border-left: 1px solid black; width: 2px; }
+.top-edge { border-top: 1px solid black; height: 3px; }
+.right-edge { border-right: 1px solid black; width: 2px; }
+.bottom-edge { border-bottom: 1px solid black; height: 3px; }
+.strike-left-edge { border-left: 1px solid red; width: 2px; }
+.strike-top-edge { border-top: 1px solid red; height: 3px; }
+.strike-right-edge { border-right: 1px solid red; width: 2px; }
+.strike-bottom-edge { border-bottom: 1px solid red; height: 3px; }
+.baseball { background-color: Green; }
